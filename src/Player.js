@@ -7,7 +7,7 @@ class Player extends Component {
         <h1>Your account details</h1>
         <p>Hello {this.props.player.name}</p>
         <p>Email: {this.props.player.email}</p>
-        <p>Your Current Handicap is: {this.props.player.handicap}</p>
+        <p>Your Current Handicap is: {this.props.player.hcp}</p>
       </div>
     );
   }

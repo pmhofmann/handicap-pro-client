@@ -8,7 +8,7 @@ class Login extends Component {
         {this.props.isLoggedIn ? (
           <div>
             <p> {`Hi ${this.props.player.name}, you're now logged in`}</p>
-            <p> {`Your current handicap is: ${this.props.player.handicap}`}</p>
+            <p> {`Your current handicap is: ${this.props.player.hcp}`}</p>
             <button onClick={this.props.handleLogOut}>Log Out</button>
           </div>
         ) : (

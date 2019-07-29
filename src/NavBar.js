@@ -11,6 +11,7 @@ class NavBar extends Component {
           Logout
         </NavLink>
         <NavLink to="/NewCourse"> Add Course</NavLink>
+        <NavLink to="/Courses"> View Courses</NavLink>
       </div>
     ) : (
       <div className="usernav">

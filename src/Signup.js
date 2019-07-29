@@ -38,13 +38,13 @@ class Signup extends Component {
             onChange={this.props.handleChange}
           />
           <br />
-          <label htmlFor="handicap">
+          <label htmlFor="hcp">
             <b>Initial handicap: </b>
           </label>
           <input
             type="number"
             placeholder="36"
-            name="handicap"
+            name="hcp"
             onChange={this.props.handleChange}
           />
           <input type="submit" value="Submit" />
