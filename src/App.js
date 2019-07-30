@@ -6,13 +6,14 @@ import Signup from "./Signup";
 import Login from "./Login";
 import NewCourse from "./NewCourse";
 import Courses from "./Courses";
+import ScoreForm from "./ScoreForm";
 import { login, getCurrentPlayer } from "./api";
 
 import "./App.css";
-
-const PLAYERS_URL = "http://localhost:3000/players";
-const COURSES_URL = "http://localhost:3000/courses";
-const HOLES_URL = "http://localhost:3000/holes";
+const BASE_URL = `http://localhost:3000/`;
+const PLAYERS_URL = `${BASE_URL}players`;
+const COURSES_URL = `${BASE_URL}courses`;
+const HOLES_URL = `${BASE_URL}holes`;
 
 class App extends React.Component {
   constructor() {
@@ -21,6 +22,7 @@ class App extends React.Component {
       player: null,
       course: {},
       courses: [],
+      scorecardHoles: [],
       holes: [
         { par: null, yardage: null },
         { par: null, yardage: null },
@@ -130,6 +132,13 @@ class App extends React.Component {
       isLoggedIn: false
     });
   };
+
+  getHolesFromServer = () => {
+    fetch(HOLES_URL)
+      .then(resp => resp.json())
+      .then(data => this.setState({ scorecardHoles: data }));
+  };
+
   render() {
     return (
       <Router>
@@ -175,6 +184,18 @@ class App extends React.Component {
         <Route
           path="/Courses"
           render={() => <Courses courses={this.state.courses} />}
+        />
+        <Route
+          path="/PostScore"
+          render={() => (
+            <ScoreForm
+              getHolesFromServer={this.getHolesFromServer}
+              scorecardHoles={this.state.scorecardHoles}
+              isLoggedIn={this.state.isLoggedIn}
+              handleLogin={this.handleLogin}
+              handleLogOut={this.handleLogOut}
+            />
+          )}
         />
       </Router>
     );

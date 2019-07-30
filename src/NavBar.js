@@ -12,6 +12,7 @@ class NavBar extends Component {
         </NavLink>
         <NavLink to="/NewCourse"> Add Course</NavLink>
         <NavLink to="/Courses"> View Courses</NavLink>
+        <NavLink to="/PostScore"> Post Score</NavLink>
       </div>
     ) : (
       <div className="usernav">
