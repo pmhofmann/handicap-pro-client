@@ -7,6 +7,7 @@ import Login from "./Login";
 import NewCourse from "./NewCourse";
 import Courses from "./Courses";
 import ScoreForm from "./ScoreForm";
+import Account from "./Account";
 import { login, getCurrentPlayer } from "./api";
 
 import "./App.css";
@@ -14,7 +15,7 @@ const BASE_URL = `http://localhost:3000/`;
 const PLAYERS_URL = `${BASE_URL}players`;
 const COURSES_URL = `${BASE_URL}courses`;
 const HOLES_URL = `${BASE_URL}holes`;
-
+const SCORECARDS_URL = `${BASE_URL}scorecards`;
 class App extends React.Component {
   constructor() {
     super();
@@ -22,7 +23,11 @@ class App extends React.Component {
       player: null,
       course: {},
       courses: [],
+      allHoles: [],
+      allScorecards: [],
+      scorecardCourse: null,
       scorecardHoles: [],
+      scorecard: {},
       holes: [
         { par: null, yardage: null },
         { par: null, yardage: null },
@@ -51,6 +56,12 @@ class App extends React.Component {
     fetch(COURSES_URL)
       .then(resp => resp.json())
       .then(data => this.setState({ courses: data }));
+    fetch(HOLES_URL)
+      .then(resp => resp.json())
+      .then(data => this.setState({ allHoles: data }));
+    fetch(SCORECARDS_URL)
+      .then(resp => resp.json())
+      .then(data => this.setState({ allScorecards: data }));
   }
 
   handleCourseChange = event => {
@@ -133,10 +144,70 @@ class App extends React.Component {
     });
   };
 
-  getHolesFromServer = () => {
-    fetch(HOLES_URL)
-      .then(resp => resp.json())
-      .then(data => this.setState({ scorecardHoles: data }));
+  selectCourse = event => {
+    event.preventDefault();
+    console.log(event.target.value);
+
+    let displayedHoles = this.state.allHoles.filter(
+      hole => parseInt(hole.course_id) === parseInt(event.target.value)
+    );
+    this.setState({
+      scorecardHoles: displayedHoles,
+      scorecardCourse: event.target.value
+    });
+    this.totalYards();
+  };
+
+  selectCourseHoles = () => {
+    console.log(
+      this.state.allHoles.filter(
+        hole => hole.course_id === this.state.scorecardCourse
+      )
+    );
+    // console.log(courseHoles);
+  };
+
+  totalYards = () => {
+    let total = this.state.scorecardHoles.reduce(function(tot, hole) {
+      return tot + hole.yardage;
+    }, 0);
+
+    return total;
+  };
+
+  totalPar = () => {
+    let total = this.state.scorecardHoles.reduce(function(tot, hole) {
+      return tot + hole.par;
+    }, 0);
+
+    return total;
+  };
+
+  handleScorecardChange = event => {
+    let scorecard = {};
+    Object.assign(scorecard, this.state.scorecard);
+    scorecard[event.target.name] = event.target.value;
+    this.setState({ scorecard: scorecard });
+  };
+
+  postScorecard = event => {
+    event.preventDefault();
+    let scorecard = {
+      course_id: this.state.scorecardCourse,
+      player_id: this.state.player.id,
+      score: parseInt(document.getElementById("total_score").innerHTML),
+      date_played: document.getElementById("date").value
+    };
+
+    let configObj = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify({ scorecard: scorecard })
+    };
+    fetch(SCORECARDS_URL, configObj).then(data => data.json());
   };
 
   render() {
@@ -145,6 +216,20 @@ class App extends React.Component {
         <NavBar
           isLoggedIn={this.state.isLoggedIn}
           handleLogOut={this.handleLogOut}
+        />
+        <Route
+          path="/Account"
+          render={() => (
+            <Account
+              courses={this.state.courses}
+              allScorecards={this.state.allScorecards}
+              handleChange={this.handleChange}
+              player={this.state.player}
+              isLoggedIn={this.state.isLoggedIn}
+              handleLogin={this.handleLogin}
+              handleLogOut={this.handleLogOut}
+            />
+          )}
         />
         <Route
           path="/Login"
@@ -189,6 +274,16 @@ class App extends React.Component {
           path="/PostScore"
           render={() => (
             <ScoreForm
+              handleScorecardChange={this.handleScorecardChange}
+              scorecard={this.state.scorecard}
+              postScorecard={this.postScorecard}
+              totalYards={this.totalYards}
+              totalPar={this.totalPar}
+              selectCourse={this.selectCourse}
+              scorecardCourse={this.state.scorecardCourse}
+              selectCourseHoles={this.state.selectCourseHoles}
+              courses={this.state.courses}
+              allHoles={this.allHoles}
               getHolesFromServer={this.getHolesFromServer}
               scorecardHoles={this.state.scorecardHoles}
               isLoggedIn={this.state.isLoggedIn}

@@ -6,7 +6,7 @@ class NavBar extends Component {
   render() {
     return this.props.isLoggedIn ? (
       <div className="usernav">
-        <NavLink to="/Account"> Account</NavLink>
+        <NavLink to="/Account"> My Account</NavLink>
         <NavLink to="/Login" onClick={this.props.handleLogOut}>
           Logout
         </NavLink>

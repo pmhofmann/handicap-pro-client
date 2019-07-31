@@ -12,7 +12,10 @@ class ScoreRow extends Component {
           <input
             type="number"
             placeholder="score"
-            name={`hole${this.props.hole.hole_number}_score`}
+            name={this.props.hole.hole_number}
+            min="1"
+            value={this.props.inputValue}
+            onChange={this.props.handleInputChange}
           />
         </td>
       </tr>
