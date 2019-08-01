@@ -17,7 +17,7 @@ class Account extends Component {
   };
 
   componentDidMount() {
-    this.filterScorecards();
+    this.props.getScorecards().then(this.filterScorecards);
   }
 
   render() {

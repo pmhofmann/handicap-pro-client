@@ -12,10 +12,10 @@ import { login, getCurrentPlayer } from "./api";
 
 import "./App.css";
 const BASE_URL = `http://localhost:3000/`;
-const PLAYERS_URL = `${BASE_URL}players`;
-const COURSES_URL = `${BASE_URL}courses`;
-const HOLES_URL = `${BASE_URL}holes`;
-const SCORECARDS_URL = `${BASE_URL}scorecards`;
+const PLAYERS_URL = `${BASE_URL}players/`;
+const COURSES_URL = `${BASE_URL}courses/`;
+const HOLES_URL = `${BASE_URL}holes/`;
+const SCORECARDS_URL = `${BASE_URL}scorecards/`;
 class App extends React.Component {
   constructor() {
     super();
@@ -52,16 +52,27 @@ class App extends React.Component {
     };
   }
 
-  componentDidMount() {
-    fetch(COURSES_URL)
+  getCourses = () => {
+    return fetch(COURSES_URL)
       .then(resp => resp.json())
       .then(data => this.setState({ courses: data }));
-    fetch(HOLES_URL)
+  };
+
+  getHoles = () => {
+    return fetch(HOLES_URL)
       .then(resp => resp.json())
       .then(data => this.setState({ allHoles: data }));
-    fetch(SCORECARDS_URL)
+  };
+
+  getScorecards = () => {
+    return fetch(SCORECARDS_URL)
       .then(resp => resp.json())
       .then(data => this.setState({ allScorecards: data }));
+  };
+  componentDidMount() {
+    this.getCourses()
+      .then(this.getHoles)
+      .then(this.getScorecards);
   }
 
   handleCourseChange = event => {
@@ -190,8 +201,58 @@ class App extends React.Component {
     this.setState({ scorecard: scorecard });
   };
 
+  updateHandicap = () => {
+    let handicapIncrement = 0;
+    if (
+      this.state.player.hcp < 6 &&
+      parseInt(
+        document.getElementById("total_score").innerHTML < this.totalPar()
+      )
+    ) {
+      handicapIncrement = 0.1;
+    } else if (6 <= this.state.player.hcp && this.state.player.hcp < 12) {
+      handicapIncrement = 0.2;
+    } else if (12 <= this.state.player.hcp && this.state.player.hcp < 18) {
+      handicapIncrement = 0.3;
+    } else if (18 <= this.state.player.hcp && this.state.player.hcp < 24) {
+      handicapIncrement = 0.4;
+    } else if (24 <= this.state.player.hcp && this.state.player.hcp < 36) {
+      handicapIncrement = 0.5;
+    }
+    let handicapMultiplier =
+      this.totalPar() -
+      (parseInt(document.getElementById("total_score").innerHTML) -
+        this.state.player.hcp);
+
+    let newHcp =
+      Math.round(
+        (this.state.player.hcp - handicapMultiplier * handicapIncrement) * 10
+      ) / 10;
+    let player = {
+      id: this.state.player.id,
+      email: this.state.player.email,
+      hcp: newHcp,
+      name: this.state.player.name,
+      password: this.state.password_digest
+    };
+    debugger;
+
+    let hcpConfigObj = {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify({ player: player })
+    };
+    fetch(PLAYERS_URL + this.state.player.id, hcpConfigObj).then(data =>
+      data.json()
+    );
+  };
+
   postScorecard = event => {
     event.preventDefault();
+    this.updateHandicap();
     let scorecard = {
       course_id: this.state.scorecardCourse,
       player_id: this.state.player.id,
@@ -217,10 +278,12 @@ class App extends React.Component {
           isLoggedIn={this.state.isLoggedIn}
           handleLogOut={this.handleLogOut}
         />
+
         <Route
           path="/Account"
           render={() => (
             <Account
+              getScorecards={this.getScorecards}
               courses={this.state.courses}
               allScorecards={this.state.allScorecards}
               handleChange={this.handleChange}
@@ -268,14 +331,21 @@ class App extends React.Component {
         />
         <Route
           path="/Courses"
-          render={() => <Courses courses={this.state.courses} />}
+          render={() => (
+            <Courses
+              getCourses={this.getCourses}
+              courses={this.state.courses}
+            />
+          )}
         />
         <Route
           path="/PostScore"
           render={() => (
             <ScoreForm
+              getScorecards={this.getScorecards}
               handleScorecardChange={this.handleScorecardChange}
               scorecard={this.state.scorecard}
+              updateHandicap={this.updateHandicap}
               postScorecard={this.postScorecard}
               totalYards={this.totalYards}
               totalPar={this.totalPar}

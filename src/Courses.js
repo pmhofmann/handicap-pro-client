@@ -2,6 +2,9 @@ import React, { Component } from "react";
 import CourseCard from "./CourseCard";
 
 class Courses extends Component {
+  componentDidMount() {
+    this.props.getCourses();
+  }
   render() {
     return (
       <div>
