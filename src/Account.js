@@ -16,8 +16,27 @@ class Account extends Component {
     });
   };
 
+  sortScores = () => {
+    let sortedScores = this.state.playerScores.sort(function(a, b) {
+      var key1 = a.date_played;
+      var key2 = b.date_played;
+
+      if (key1 < key2) {
+        return -1;
+      } else if (key1 == key2) {
+        return 0;
+      } else {
+        return 1;
+      }
+    });
+    this.setState({ playerScores: sortedScores });
+  };
+
   componentDidMount() {
-    this.props.getScorecards().then(this.filterScorecards);
+    this.props
+      .getScorecards()
+      .then(this.filterScorecards)
+      .then(this.sortScores);
   }
 
   render() {

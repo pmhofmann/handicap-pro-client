@@ -70,10 +70,22 @@ class App extends React.Component {
       .then(data => this.setState({ allScorecards: data }));
   };
 
-  componentDidMount() {
+  getAllData = () => {
     this.getCourses()
       .then(this.getHoles)
       .then(this.getScorecards);
+  };
+  componentDidMount() {
+    const token = localStorage.getItem("token");
+    if (token) {
+      getCurrentPlayer(token)
+        .then(player => {
+          this.setState({ isLoggedIn: true, player: player });
+        })
+        .then(() => {
+          this.getAllData();
+        });
+    }
   }
 
   handleCourseChange = event => {
