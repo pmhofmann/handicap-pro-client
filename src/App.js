@@ -69,6 +69,7 @@ class App extends React.Component {
       .then(resp => resp.json())
       .then(data => this.setState({ allScorecards: data }));
   };
+
   componentDidMount() {
     this.getCourses()
       .then(this.getHoles)
@@ -203,26 +204,31 @@ class App extends React.Component {
 
   updateHandicap = () => {
     let handicapIncrement = 0;
+    let handicapMultiplier = 0;
     if (
-      this.state.player.hcp < 6 &&
-      parseInt(
-        document.getElementById("total_score").innerHTML < this.totalPar()
-      )
+      parseInt(document.getElementById("total_score").innerHTML) -
+        this.state.player.hcp <=
+      this.totalPar()
     ) {
-      handicapIncrement = 0.1;
-    } else if (6 <= this.state.player.hcp && this.state.player.hcp < 12) {
-      handicapIncrement = 0.2;
-    } else if (12 <= this.state.player.hcp && this.state.player.hcp < 18) {
-      handicapIncrement = 0.3;
-    } else if (18 <= this.state.player.hcp && this.state.player.hcp < 24) {
-      handicapIncrement = 0.4;
-    } else if (24 <= this.state.player.hcp && this.state.player.hcp < 36) {
-      handicapIncrement = 0.5;
+      if (this.state.player.hcp < 6) {
+        handicapIncrement = 0.1;
+      } else if (6 <= this.state.player.hcp && this.state.player.hcp < 12) {
+        handicapIncrement = 0.2;
+      } else if (12 <= this.state.player.hcp && this.state.player.hcp < 18) {
+        handicapIncrement = 0.3;
+      } else if (18 <= this.state.player.hcp && this.state.player.hcp < 24) {
+        handicapIncrement = 0.4;
+      } else if (24 <= this.state.player.hcp && this.state.player.hcp < 36) {
+        handicapIncrement = 0.5;
+      }
+      handicapMultiplier =
+        this.totalPar() -
+        parseInt(document.getElementById("total_score").innerHTML) -
+        this.state.player.hcp;
+    } else {
+      handicapIncrement = -0.1;
+      handicapMultiplier = 1;
     }
-    let handicapMultiplier =
-      this.totalPar() -
-      (parseInt(document.getElementById("total_score").innerHTML) -
-        this.state.player.hcp);
 
     let newHcp =
       Math.round(
@@ -235,7 +241,6 @@ class App extends React.Component {
       name: this.state.player.name,
       password: this.state.password_digest
     };
-    debugger;
 
     let hcpConfigObj = {
       method: "PATCH",
