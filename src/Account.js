@@ -23,7 +23,7 @@ class Account extends Component {
 
       if (key1 < key2) {
         return -1;
-      } else if (key1 == key2) {
+      } else if (key1 === key2) {
         return 0;
       } else {
         return 1;
@@ -42,8 +42,8 @@ class Account extends Component {
   render() {
     return (
       <div>
-        <p> {`Hi ${this.props.player.name}`} </p>
-        <p> {`Your current handicap is: ${this.props.player.hcp}`}</p>
+        <h1> {`Hi ${this.props.player.name}`} </h1>
+        <h2> {`Your current handicap is: ${this.props.player.hcp}`}</h2>
 
         <h2>Your Previous Rounds:</h2>
 

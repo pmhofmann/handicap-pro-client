@@ -230,13 +230,13 @@ class App extends React.Component {
         handicapIncrement = 0.3;
       } else if (18 <= this.state.player.hcp && this.state.player.hcp < 24) {
         handicapIncrement = 0.4;
-      } else if (24 <= this.state.player.hcp && this.state.player.hcp < 36) {
+      } else if (24 <= this.state.player.hcp && this.state.player.hcp <= 36) {
         handicapIncrement = 0.5;
       }
       handicapMultiplier =
         this.totalPar() -
-        parseInt(document.getElementById("total_score").innerHTML) -
-        this.state.player.hcp;
+        (parseInt(document.getElementById("total_score").innerHTML) -
+          this.state.player.hcp);
     } else {
       handicapIncrement = -0.1;
       handicapMultiplier = 1;
@@ -359,6 +359,8 @@ class App extends React.Component {
           path="/PostScore"
           render={() => (
             <ScoreForm
+              getHoles={this.getHoles}
+              getCourses={this.getCourses}
               getScorecards={this.getScorecards}
               handleScorecardChange={this.handleScorecardChange}
               scorecard={this.state.scorecard}

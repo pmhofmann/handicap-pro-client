@@ -38,6 +38,27 @@ class ScoreForm extends Component {
     return total ? total : 0;
   };
 
+  // sortCourses = () => {
+  //   let sortedCourses = this.props.courses.sort(function(a, b) {
+  //     var key1 = a.name;
+  //     var key2 = b.name;
+
+  //     if (key1 < key2) {
+  //       return -1;
+  //     } else if (key1 == key2) {
+  //       return 0;
+  //     } else {
+  //       return 1;
+  //     }
+  //   });
+  //   this.setState({ courses: sortedCourses });
+  // };
+w
+  componentDidMount() {
+    this.props.getCourses();
+    this.props.getHoles();
+  }
+
   render() {
     return (
       <div>
@@ -57,7 +78,7 @@ class ScoreForm extends Component {
           <b>Date Played: </b>
         </label>
         <input type="date" placeholder="Date Played" id="date" />
-        <table>
+        <table class="ui celled table">
           <thead>
             <tr>
               <th>Hole</th>
@@ -89,7 +110,9 @@ class ScoreForm extends Component {
             </tr>
           </tfoot>
         </table>
-        <button onClick={this.props.postScorecard}>Post Scorecard</button>
+        <button class="ui positive button" onClick={this.props.postScorecard}>
+          Post Scorecard
+        </button>
       </div>
     );
   }

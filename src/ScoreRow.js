@@ -10,6 +10,7 @@ class ScoreRow extends Component {
         <td>{this.props.hole.par}</td>
         <td>
           <input
+            class="ui focus input"
             type="number"
             placeholder="score"
             name={this.props.hole.hole_number}
